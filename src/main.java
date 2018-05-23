@@ -5,7 +5,7 @@ public class main {
     public static LinkedHashSet<Integer> hashmap = new LinkedHashSet<>();
     public static Vector<Integer> primes = new Vector<Integer>();
     public static void main(String[] args){
-        int n = 1000000;
+        int n = 10000;
         Worker zero = new Worker(hashmap, primes, n);
 /*        LinkedHashSet<Integer> hashmap = new LinkedHashSet<>();
         Vector<Integer> primes = new Vector<Integer>();*/
