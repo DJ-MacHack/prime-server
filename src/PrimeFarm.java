@@ -1,13 +1,17 @@
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static java.lang.Math.sqrt;
 
 public class PrimeFarm {
     private int lastN = 0;
-    private LinkedHashSet<Integer> hashMap;
+    //private LinkedHashSet<Integer> hashMap;
+    private Set hashMap;
     private Vector<Integer> primes;
 
-    public PrimeFarm(LinkedHashSet<Integer> hashMap, Vector<Integer> primes) {
+    //public PrimeFarm(LinkedHashSet<Integer> hashMap, Vector<Integer> primes) {
+    public PrimeFarm(Set hashMap, Vector<Integer> primes) {
         this.hashMap = hashMap;
         this.primes = primes;
         findN();
@@ -62,7 +66,7 @@ public class PrimeFarm {
     }
 
     public Vector<Integer> getPrimes(int n) {
-        Iterator<Integer> iter = this.hashMap.iterator();
+        Iterator iter = this.hashMap.iterator();
         int last = 1;
         int ncopy = n;
         if (this.primes.size() == n)
@@ -71,7 +75,7 @@ public class PrimeFarm {
             this.primes.clear();
         }
         while (iter.hasNext() && ncopy > 0) {
-            this.primes.add(iter.next());
+            this.primes.add((int) iter.next());
             last = this.primes.lastElement();
             ncopy--;
         }
