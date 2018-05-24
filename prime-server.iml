@@ -7,5 +7,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="com.googlecode.concurrentlinkedhashmap:concurrentlinkedhashmap-lru:1.4.2" level="application" />
   </component>
 </module>

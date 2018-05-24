@@ -3,73 +3,68 @@ import java.text.NumberFormat;
 import java.util.LinkedHashSet;
 import java.util.Vector;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
-class Worker extends Thread
-{
-
-    private LinkedHashSet<Integer> shashmap = new LinkedHashSet<>(); //main.hashmap; //.stream().map(Integer::new).collect(Collectors.toSet());
-    private Vector<Integer> primes = new Vector<>();
+class Worker extends Thread {
+    private Vector<Integer> primes = new Vector<Integer>();
     private int n;
-    private LinkedHashSet<Integer> org;
-    private boolean finished = false;
-    private boolean shared = false;
+    private Set hashes;
 
-    Worker(LinkedHashSet<Integer> hashmap, Vector<Integer> primes, int n)
-    {
+    //Worker(LinkedHashSet<Integer> hashmap, Vector<Integer> primes, int n)
+    Worker(Set hashmap, int n) {
         super("my extending thread");
+        main.free = false;
         //TODO THREADSAFE!!!!!!
         //this.hashmap = (LinkedHashSet<Integer>)hashmap.clone();
         //this.primes = (Vector<Integer>) primes.clone();
-        synchronized (hashmap){
+        /*synchronized (hashmap){
             for(Iterator iter = hashmap.iterator(); iter.hasNext();){
                 int entry = (int) iter.next();
                 this.shashmap.add(entry);
             }
             this.org = hashmap;
-        }
-        synchronized (primes){
-            for(Iterator iter2 = primes.iterator(); iter2.hasNext();){
-                int entry2 = (int) iter2.next();
-                this.primes.add(entry2);
-            }
-        }
+        }*/
+        this.hashes = hashmap;
+
         this.n = n;
         start();
     }
+
     public void run() {
         try {
+            System.out.println("start " + n);
             //synchronized (hashmap) {
-                PrimeFarm farm = new PrimeFarm(this.shashmap, this.primes);
-                long start = System.currentTimeMillis();
-                NumberFormat formatter = new DecimalFormat("#0.00000");
-                primes = farm.getPrimes(n);
-                long end = System.currentTimeMillis();
-                System.out.println(n + "th prime:");
-                System.out.println((int) primes.lastElement());
-                System.out.println("Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
-                System.out.println(primes.size());
+            //PrimeFarm farm = new PrimeFarm(this.shashmap, this.primes);
+            PrimeFarm farm = new PrimeFarm(this.hashes, this.primes);
+            long start = System.currentTimeMillis();
+            NumberFormat formatter = new DecimalFormat("#0.00000");
+            primes = farm.getPrimes(n);
+            long end = System.currentTimeMillis();
+            System.out.print(n + "th prime: ");
+            int last = -1;
+            for (Iterator iter = this.primes.iterator(); iter.hasNext(); )
+                last = (int) iter.next();
+            System.out.println(last);
+            System.out.println("Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+            System.out.println("Thread vec " + this.n + " : " + primes.size());
+            System.out.println("Thread set " + this.n + " : " + this.hashes.size());
             //}
+        } catch (Exception e) {
+            System.out.println("my thread interrupted " + n);
         }
-        catch(Exception e)
-            {
-                System.out.println("my thread interrupted");
+        /*synchronized (main.primes){
+            if(main.primes.size() >= this.primes.size()){
+                return;
             }
-            this.finished = true;
-        }
-
- /*   @Override
-    protected void finalize() throws Throwable {
-        if(finished) {
-            synchronized (this.org) {
-                    if (this.org.size() < this.shashmap.size()) {
-                        for (int i = this.org.size(); i < n; i++) {
-                            this.org.add(this.primes.elementAt(i));
-                        }
-                    }
-                }
+            for(int i = main.primes.size(); i < this.primes.size(); i++){
+                main.primes.add(this.primes.elementAt(i));
             }
+        }*/
+    }
 
-        super.finalize();
-    }*/
+    public Vector<Integer> getPrimes() {
+        return this.primes;
+    }
 }
