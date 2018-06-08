@@ -12,13 +12,21 @@ public class PrimeFarm {
 
     //public PrimeFarm(LinkedHashSet<Integer> hashMap, Vector<Integer> primes) {
     public PrimeFarm(Set hashMap, Vector<Integer> primes) {
-        this.hashMap = hashMap;
+      synchronized (hashMap) {
+          this.hashMap = hashMap;
+      }
         this.primes = primes;
         findN();
     }
 
+    public PrimeFarm(){
+
+    }
+
     private void findN() {
-        this.lastN = hashMap.size();
+        synchronized (this.hashMap) {
+            this.lastN = hashMap.size();
+        }
     }
 
     private int nextPrime(int digit) {
@@ -66,28 +74,30 @@ public class PrimeFarm {
     }
 
     public Vector<Integer> getPrimes(int n) {
-        Iterator iter = this.hashMap.iterator();
-        int last = 1;
-        int ncopy = n;
-        if (this.primes.size() == n)
-            return this.primes;
-        if (this.primes.size() > n) {
-            this.primes.clear();
-        }
-        while (iter.hasNext() && ncopy > 0) {
-            this.primes.add((int) iter.next());
-            last = this.primes.lastElement();
-            ncopy--;
-        }
-        if (ncopy == 0)
-            return primes;
-        n -= lastN;
-        while (n > 0) {
-            last = nextPrime(last);
-            this.primes.add(last);
-            hashMap.add(last);
-            n--;
-            this.lastN++;
+        synchronized (this.hashMap) {
+            Iterator iter = this.hashMap.iterator();
+            int last = 1;
+            int ncopy = n;
+            if (this.primes.size() == n)
+                return this.primes;
+            if (this.primes.size() > n) {
+                this.primes.clear();
+            }
+            while (iter.hasNext() && ncopy > 0) {
+                this.primes.add((int) iter.next());
+                last = this.primes.lastElement();
+                ncopy--;
+            }
+            if (ncopy == 0)
+                return primes;
+            n -= lastN;
+            while (n > 0) {
+                last = nextPrime(last);
+                this.primes.add(last);
+                hashMap.add(last);
+                n--;
+                this.lastN++;
+            }
         }
         return primes;
     }
